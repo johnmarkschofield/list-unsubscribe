@@ -15,8 +15,12 @@ if ($ENV{MM_LIST_UNSUB} =~ /<mailto:([^>]+)/i) {
     $body = "unsubscribe";
   }  
   my $actions = <<"END_ACTIONS";
-{ 
+{
   actions = (
+		{
+			type = 'notify';
+			formatString = 'Sending unsubscribe email to $to';
+		},
 		{
 			type = 'createMessage';
 			body = '$body';
@@ -28,7 +32,7 @@ if ($ENV{MM_LIST_UNSUB} =~ /<mailto:([^>]+)/i) {
 				"in-reply-to" = '$ENV{MM_MID}';
 			};
 			resultActions = (
-			  { 
+			  {
 			    type = 'sendMessage';
 			  },
         {
@@ -48,8 +52,12 @@ print $actions;
   my $uri = $1;
   system "open", $uri;
   my $actions = <<"END_ACTIONS";
-{ 
+{
   actions = (
+		{
+			type = 'notify';
+			formatString = 'Opening unsubscribe URL in browser';
+		},
 		{
 			type = 'playSound';
 			path = '/System/Library/Sounds/Hero.aiff';
