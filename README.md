@@ -1,12 +1,19 @@
 # List-Unsubscribe MailMate Bundle
 
-A [MailMate](https://freron.com/) bundle that handles `List-Unsubscribe` headers with a single keystroke.
+A [MailMate](https://freron.com/) bundle that handles undesirable emails with a single keystroke.
 
-**What it does**, in order of preference:
+**What it does**, in order:
 
-1. If the header contains a `mailto:` URI — sends an unsubscribe email automatically.
-2. If the header contains an `http`/`https` URI — opens it in your default browser.
-3. If neither is found — shows a notification with the raw header value.
+1. The bundle should be available for every message, not just those with certain headers. 
+2. If the header contains a `mailto:` URI — sends an unsubscribe email automatically.
+3. If the header contains an `http`/`https` URI — opens it in your default browser.
+4. If the message contains the text "unsubscribe" as a link, open it in your default browser.
+5. If no automated way of unsubscribing is found, the message is junk mail. Move it to the "train junk" folder.
+
+
+Note:
+* There should be no person-specific hard-coded strings. The name of the "train junk" folder should be configurable somewhere.
+* All actions should be written to a log for analysis.
 
 Invoke with `⌃U` (Control-U) or **Command → ListUnsub → List Unsubscribe**.
 
