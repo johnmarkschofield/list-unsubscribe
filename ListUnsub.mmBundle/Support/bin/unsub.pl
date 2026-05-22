@@ -3,15 +3,15 @@
 use URI;
 use POSIX qw(strftime);
 
-my $log_path = "$ENV{HOME}/Library/Logs/ListUnsub.log";
+my $log_path = "/tmp/ListUnsub.log";
 
 sub log_msg {
     my ($msg) = @_;
     my $ts = strftime("%Y-%m-%d %H:%M:%S", localtime);
-    if (open(my $fh, '>>', $log_path)) {
-        print $fh "$ts  $msg\n";
-        close $fh;
-    }
+    open(my $fh, '>>', $log_path)
+        or die "Cannot open log $log_path: $!";
+    print $fh "$ts  $msg\n";
+    close $fh;
 }
 
 my $header = $ENV{MM_LIST_UNSUB} // '';
