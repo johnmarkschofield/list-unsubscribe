@@ -60,7 +60,7 @@ if ($header =~ /<mailto:([^>]+)/i) {
     my $subject = $query{subject} || "unsubscribe";
     my $body    = $query{body}    || "unsubscribe";
 
-    log_msg("method: mailto  to=$to  subject=$subject");
+    log_msg("method: mailto  to=$to  subject=$subject  action: send email + move to $config{trash_folder}");
 
     print <<"END_ACTIONS";
 {
@@ -94,7 +94,7 @@ END_ACTIONS
 
 } elsif ($header =~ /<(https?:[^>]+)/i) {
     my $uri = $1;
-    log_msg("method: http-header  url=$uri");
+    log_msg("method: http-header  url=$uri  action: open in browser + move to $config{trash_folder}");
 
     system "open", $uri;
     print <<"END_ACTIONS";
@@ -114,7 +114,7 @@ END_ACTIONS
 END_ACTIONS
 
 } elsif ($body_unsub_url) {
-    log_msg("method: body-link  url=$body_unsub_url");
+    log_msg("method: body-link  url=$body_unsub_url  action: open in browser + move to $config{trash_folder}");
 
     system "open", $body_unsub_url;
     print <<"END_ACTIONS";
@@ -134,7 +134,7 @@ END_ACTIONS
 END_ACTIONS
 
 } else {
-    log_msg("method: none  moving to $config{junk_folder}");
+    log_msg("method: none  action: move to $config{junk_folder}");
 
     print <<"END_ACTIONS";
 {
