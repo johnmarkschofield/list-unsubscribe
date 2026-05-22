@@ -8,3 +8,5 @@ First looks for a `mailto:` URI in the `List-Unsubscribe` header. If found will 
 
 Next looks for a `http` URI in the `List-Unsubscribe` header. If found will open that URI in the default web browser.
 
+If that is not found, moves message to "Train Junk" folder.
+
