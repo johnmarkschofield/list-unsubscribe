@@ -53,8 +53,23 @@ The command will appear under **Command → ListUnsub → List Unsubscribe** and
 
 ## Usage
 
-Select any message that has a `List-Unsubscribe` header (the command is only active when the header is present) and press `⌃U`.
+Select any message and press `⌃U`. The bundle tries each method in order:
 
-- **Mailing-list unsubscribe via email**: a message is composed and sent automatically, then MailMate plays a confirmation sound.
-- **Web unsubscribe**: the unsubscribe URL opens in your default browser.
-- **No URI found**: a notification shows the raw header value so you can handle it manually.
+1. **`List-Unsubscribe` mailto URI** — sends an unsubscribe email automatically, then moves the message to Trash.
+2. **`List-Unsubscribe` http/https URI** — opens the URL in your browser, then moves the message to Trash.
+3. **Unsubscribe link in message body** — finds the first `<a href>` whose link text contains "unsubscribe" and opens it in your browser, then moves the message to Trash.
+4. **No method found** — moves the message to the configured junk folder for manual training.
+
+All actions are logged to `/tmp/ListUnsub.log`.
+
+## Configuration
+
+The bundle ships with a default config at `ListUnsub.mmBundle/Support/conf/config`. To override, create `~/.config/ListUnsub/config` — it takes precedence over the bundled defaults.
+
+```
+# Mailbox to move the message to after a successful unsubscribe action
+trash_folder = Trash
+
+# Mailbox to move the message to when no unsubscribe method is found
+junk_folder = Junk Mail
+```

@@ -1,0 +1,10 @@
+# ListUnsub configuration
+#
+# To override, copy this file to ~/.config/ListUnsub/config and edit there.
+# The user config is read first; this file is the fallback.
+
+# Mailbox to move the message to after a successful unsubscribe action
+trash_folder = Trash
+
+# Mailbox to move the message to when no unsubscribe method is found
+junk_folder = Junk Mail
