@@ -70,6 +70,10 @@ if ($header =~ /<mailto:([^>]+)/i) {
       formatString = 'Sending unsubscribe email to $to';
     },
     {
+      type = 'moveMessage';
+      mailbox = '$config{trash_folder}';
+    },
+    {
       type = 'createMessage';
       body = '$body';
       headers = {
@@ -81,12 +85,8 @@ if ($header =~ /<mailto:([^>]+)/i) {
       };
       resultActions = (
         { type = 'sendMessage'; },
-        { type = playSound; path = '/System/Library/Sounds/Hero.aiff'; },
+        { type = 'playSound'; path = '/System/Library/Sounds/Hero.aiff'; },
       );
-    },
-    {
-      type = 'moveMessage';
-      mailboxType = 'trash';
     },
   );
 }
@@ -107,7 +107,7 @@ END_ACTIONS
     { type = 'playSound'; path = '/System/Library/Sounds/Hero.aiff'; },
     {
       type = 'moveMessage';
-      mailboxType = 'trash';
+      mailbox = '$config{trash_folder}';
     },
   );
 }
@@ -127,7 +127,7 @@ END_ACTIONS
     { type = 'playSound'; path = '/System/Library/Sounds/Hero.aiff'; },
     {
       type = 'moveMessage';
-      mailboxType = 'trash';
+      mailbox = '$config{trash_folder}';
     },
   );
 }
