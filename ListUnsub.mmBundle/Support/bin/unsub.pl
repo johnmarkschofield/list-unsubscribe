@@ -85,8 +85,8 @@ if ($header =~ /<mailto:([^>]+)/i) {
       );
     },
     {
-      type = 'moveMessages';
-      mailboxPath = '$config{trash_folder}';
+      type = 'moveMessage';
+      mailboxType = 'trash';
     },
   );
 }
@@ -106,8 +106,8 @@ END_ACTIONS
     },
     { type = 'playSound'; path = '/System/Library/Sounds/Hero.aiff'; },
     {
-      type = 'moveMessages';
-      mailboxPath = '$config{trash_folder}';
+      type = 'moveMessage';
+      mailboxType = 'trash';
     },
   );
 }
@@ -126,8 +126,8 @@ END_ACTIONS
     },
     { type = 'playSound'; path = '/System/Library/Sounds/Hero.aiff'; },
     {
-      type = 'moveMessages';
-      mailboxPath = '$config{trash_folder}';
+      type = 'moveMessage';
+      mailboxType = 'trash';
     },
   );
 }
@@ -145,8 +145,8 @@ END_ACTIONS
     },
     { type = 'playSound'; path = '/System/Library/Sounds/Basso.aiff'; },
     {
-      type = 'moveMessages';
-      mailboxPath = '$config{junk_folder}';
+      type = 'moveMessage';
+      mailbox = '$config{junk_folder}';
     },
   );
 }
