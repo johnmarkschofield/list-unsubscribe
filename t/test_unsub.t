@@ -103,4 +103,48 @@ sub run_script {
     like($out, qr/moveMessage/,                       'no-post-hdr: output includes moveMessage');
 }
 
+# --- Body scan: quoted-printable encoded link ---
+{
+    my $tmp = tempdir(CLEANUP => 1);
+    make_mock($tmp, 'open', 'exit 0');
+
+    # Simulate a QP-encoded HTML body with a multi-line href and =3D for "="
+    my $qp_body = join("\r\n",
+        'Content-Type: text/html; charset=ascii',
+        'Content-Transfer-Encoding: quoted-printable',
+        '',
+        '<html><body>',
+        '<a href=3D"https://example.com/unsub?token=3D=',
+        'abc123" style=3D"color:blue;">Unsubscribe</a>',
+        '</body></html>',
+    );
+
+    my ($out, $log) = run_script(
+        tmp    => $tmp,
+        header => '',
+        body   => $qp_body,
+    );
+
+    like($log, qr/method: body-link/,             'QP body: finds body-link method');
+    like($log, qr!url=https://example\.com/unsub!, 'QP body: extracts URL from QP-encoded href');
+    like($out, qr/moveMessage/,                    'QP body: output includes moveMessage');
+}
+
+# --- Body scan: plain (non-QP) link still works ---
+{
+    my $tmp = tempdir(CLEANUP => 1);
+    make_mock($tmp, 'open', 'exit 0');
+
+    my $plain_body = '<a href="https://example.com/unsub">Click to Unsubscribe</a>';
+
+    my ($out, $log) = run_script(
+        tmp    => $tmp,
+        header => '',
+        body   => $plain_body,
+    );
+
+    like($log, qr/method: body-link/,             'plain body: finds body-link method');
+    like($log, qr!url=https://example\.com/unsub!, 'plain body: extracts URL');
+}
+
 done_testing();

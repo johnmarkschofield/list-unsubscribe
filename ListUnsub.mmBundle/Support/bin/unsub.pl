@@ -63,9 +63,15 @@ my $raw    = do { local $/; <STDIN> };
 my $header = $ENV{MM_LIST_UNSUB} // '';
 log_msg("List-Unsubscribe: $header");
 
+# Decode quoted-printable so href=3D"..." and multi-line URLs are normalised
+# before scanning. Safe to apply to the whole raw message.
+my $decoded = $raw;
+$decoded =~ s/=\r?\n//g;
+$decoded =~ s/=([0-9A-Fa-f]{2})/chr(hex($1))/ge;
+
 # Scan body for first <a href="..."> whose link text contains "unsubscribe"
 my $body_unsub_url;
-while ($raw =~ /<a[^>]+href=["']?(https?:[^"'\s>]+)["']?[^>]*>([^<]*unsubscrib[^<]*)<\/a>/gi) {
+while ($decoded =~ /<a[^>]+href=["']?(https?:[^"'\s>]+)["']?[^>]*>([^<]*unsubscrib[^<]*)<\/a>/gi) {
     $body_unsub_url = $1;
     last;
 }
