@@ -141,7 +141,7 @@ END_ACTIONS
   actions = (
     {
       type = 'notify';
-      formatString = 'No unsubscribe method found — moving to $config{junk_folder}';
+      formatString = 'No unsubscribe method found - moving to $config{junk_folder}';
     },
     { type = 'playSound'; path = '/System/Library/Sounds/Basso.aiff'; },
     {
