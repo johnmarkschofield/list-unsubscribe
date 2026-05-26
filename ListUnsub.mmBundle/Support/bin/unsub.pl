@@ -59,22 +59,9 @@ sub do_post {
 my %config = load_config();
 log_msg("invoked  trash_folder=$config{trash_folder}  junk_folder=$config{junk_folder}");
 
-my $raw    = do { local $/; <STDIN> };
+do { local $/; <STDIN> };  # consume stdin; message body not used
 my $header = $ENV{MM_LIST_UNSUB} // '';
 log_msg("List-Unsubscribe: $header");
-
-# Decode quoted-printable so href=3D"..." and multi-line URLs are normalised
-# before scanning. Safe to apply to the whole raw message.
-my $decoded = $raw;
-$decoded =~ s/=\r?\n//g;
-$decoded =~ s/=([0-9A-Fa-f]{2})/chr(hex($1))/ge;
-
-# Scan body for first <a href="..."> whose link text contains "unsubscribe"
-my $body_unsub_url;
-while ($decoded =~ /<a[^>]+href=["']?(https?:[^"'\s>]+)["']?[^>]*>([^<]*unsubscrib[^<]*)<\/a>/gi) {
-    $body_unsub_url = $1;
-    last;
-}
 
 if ($header =~ /<mailto:([^>]+)/i) {
     my $uri     = URI->new($1);
@@ -160,26 +147,6 @@ END_ACTIONS
 }
 END_ACTIONS
     }
-
-} elsif ($body_unsub_url) {
-    log_msg("method: body-link  url=$body_unsub_url  action: open in browser + move to $config{trash_folder}");
-
-    system "open", $body_unsub_url;
-    print <<"END_ACTIONS";
-{
-  actions = (
-    {
-      type = 'notify';
-      formatString = 'Opening unsubscribe link from message body';
-    },
-    { type = 'playSound'; path = '/System/Library/Sounds/Hero.aiff'; },
-    {
-      type = 'moveMessage';
-      mailbox = '$config{trash_folder}';
-    },
-  );
-}
-END_ACTIONS
 
 } else {
     log_msg("method: none  action: move to $config{junk_folder}");

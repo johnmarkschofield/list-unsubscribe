@@ -58,8 +58,7 @@ Select any message and press `⌃U`. The bundle tries each method in order:
 1. **`List-Unsubscribe` mailto URI** — sends an unsubscribe email automatically, then moves the message to Trash.
 2. **`List-Unsubscribe` https URI + `List-Unsubscribe-Post` header (RFC 8058)** — silently POSTs `List-Unsubscribe=One-Click` via `curl` and moves the message to Trash. The HTTP response code is logged and shown in the notification.
 3. **`List-Unsubscribe` http/https URI (no Post header)** — opens the URL in your browser, then moves the message to Trash.
-4. **Unsubscribe link in message body** — finds the first `<a href>` whose link text contains "unsubscribe" and opens it in your browser, then moves the message to Trash.
-5. **No method found** — moves the message to the configured junk folder for manual training.
+4. **No `List-Unsubscribe` header** — moves the message to the configured junk folder for manual training.
 
 All actions are logged to `/tmp/ListUnsub.log`.
 
@@ -80,3 +79,13 @@ trash_folder = Trash
 # Mailbox to move the message to when no unsubscribe method is found
 junk_folder = Junk Mail
 ```
+
+### Finding the correct mailbox path
+
+`Trash` is a MailMate special-folder keyword and always works. For any other folder, MailMate requires the full IMAP URL. To get it: **click the mailbox in MailMate's sidebar and press `⌘C`**. This copies the full IMAP path, e.g.:
+
+```
+imap://you%40example.com@imap.example.com/FolderName
+```
+
+Paste that value as-is into your config file.
