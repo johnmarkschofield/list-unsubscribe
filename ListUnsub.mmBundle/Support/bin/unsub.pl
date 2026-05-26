@@ -3,7 +3,7 @@
 use URI;
 use POSIX qw(strftime);
 
-my $log_path = "/tmp/ListUnsub.log";
+my $log_path = $ENV{LISTUNSUB_LOG_PATH} // "/tmp/ListUnsub.log";
 
 sub log_msg {
     my ($msg) = @_;
@@ -37,6 +37,23 @@ sub load_config {
         last;
     }
     return %config;
+}
+
+# POST to a List-Unsubscribe URL per RFC 8058.
+# Returns the HTTP status code string, or empty string on error.
+sub do_post {
+    my ($uri, $post_body) = @_;
+    open(my $fh, '-|', 'curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+         '-X', 'POST',
+         '-H', 'Content-Type: application/x-www-form-urlencoded',
+         '-d', $post_body,
+         '--', $uri)
+        or return '';
+    my $code = do { local $/; <$fh> };
+    close $fh;
+    $code //= '';
+    $code =~ s/\s+$//;
+    return $code;
 }
 
 my %config = load_config();
@@ -93,11 +110,35 @@ if ($header =~ /<mailto:([^>]+)/i) {
 END_ACTIONS
 
 } elsif ($header =~ /<(https?:[^>]+)/i) {
-    my $uri = $1;
-    log_msg("method: http-header  url=$uri  action: open in browser + move to $config{trash_folder}");
+    my $uri       = $1;
+    my $post_body = $ENV{MM_LIST_UNSUB_POST} // '';
 
-    system "open", $uri;
-    print <<"END_ACTIONS";
+    if ($post_body) {
+        my $http_code = do_post($uri, $post_body);
+        my $success   = $http_code =~ /^2/;
+        log_msg("method: http-post  url=$uri  http_code=$http_code  " . ($success ? "success" : "failed"));
+
+        print <<"END_ACTIONS";
+{
+  actions = (
+    {
+      type = 'notify';
+      formatString = 'Unsubscribed via POST (HTTP $http_code)';
+    },
+    { type = 'playSound'; path = '/System/Library/Sounds/Hero.aiff'; },
+    {
+      type = 'moveMessage';
+      mailbox = '$config{trash_folder}';
+    },
+  );
+}
+END_ACTIONS
+
+    } else {
+        log_msg("method: http-header  url=$uri  action: open in browser + move to $config{trash_folder}");
+
+        system "open", $uri;
+        print <<"END_ACTIONS";
 {
   actions = (
     {
@@ -112,6 +153,7 @@ END_ACTIONS
   );
 }
 END_ACTIONS
+    }
 
 } elsif ($body_unsub_url) {
     log_msg("method: body-link  url=$body_unsub_url  action: open in browser + move to $config{trash_folder}");

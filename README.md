@@ -56,11 +56,18 @@ The command will appear under **Command → ListUnsub → List Unsubscribe** and
 Select any message and press `⌃U`. The bundle tries each method in order:
 
 1. **`List-Unsubscribe` mailto URI** — sends an unsubscribe email automatically, then moves the message to Trash.
-2. **`List-Unsubscribe` http/https URI** — opens the URL in your browser, then moves the message to Trash.
-3. **Unsubscribe link in message body** — finds the first `<a href>` whose link text contains "unsubscribe" and opens it in your browser, then moves the message to Trash.
-4. **No method found** — moves the message to the configured junk folder for manual training.
+2. **`List-Unsubscribe` https URI + `List-Unsubscribe-Post` header (RFC 8058)** — silently POSTs `List-Unsubscribe=One-Click` via `curl` and moves the message to Trash. The HTTP response code is logged and shown in the notification.
+3. **`List-Unsubscribe` http/https URI (no Post header)** — opens the URL in your browser, then moves the message to Trash.
+4. **Unsubscribe link in message body** — finds the first `<a href>` whose link text contains "unsubscribe" and opens it in your browser, then moves the message to Trash.
+5. **No method found** — moves the message to the configured junk folder for manual training.
 
 All actions are logged to `/tmp/ListUnsub.log`.
+
+## Running Tests
+
+```sh
+perl t/test_unsub.t
+```
 
 ## Configuration
 
