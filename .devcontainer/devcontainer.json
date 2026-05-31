@@ -1,0 +1,19 @@
+{
+  "name": "List Unsubscribe",
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "richterger.perl",
+        "mads-hartmann.bash-ide-vscode",
+        "timonwong.shellcheck",
+        "davidanson.vscode-markdownlint"
+      ]
+    }
+  },
+
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y cpanminus && sudo cpanm URI",
+
+  "remoteUser": "vscode"
+}
